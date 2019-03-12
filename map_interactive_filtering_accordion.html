@@ -18,7 +18,7 @@
             padding: 0;
         }
 
-        #infoDisplay {
+        #accordion {
             position: absolute;
             left: 0;
             top: 0;
@@ -33,7 +33,7 @@
             bottom: 0;
             width: 50%;
         }
-        
+
         img {
             max-height: 300px;
             max-width: 300px;
@@ -47,7 +47,7 @@
 </head>
 
 <body>
-    <div class="container" id='infoDisplay'></div>
+    <div id='accordion'></div>
     <div id='map'></div>
     <script>
         // Access token for MapBoxGL
@@ -219,10 +219,10 @@
 
         for (var j = 0; j < filteredArray.length; j++) {
             // This portion below is just jquery to make the information appear on the left side in the div infoDisplay
-            var movieLocation = "<h2>" + filteredArray[j].properties.title + "</h2>";
-            var movieTitle = "<h3>" + filteredArray[j].properties.movie + "</h3>";
-            var movieDescription = "<p>" + filteredArray[j].properties.description + "</p>";
-            $("#infoDisplay").append("<div>" + movieLocation + movieTitle + movieDescription + "</div>");
+            var movieLocation = "<div class=\"card-header\" id=\"heading" + j + "\"> <h5 class=\"mb-0\"> <button class=\"btn btn-link\" data-toggle=\"collapse\" data-target=\"#collapse" + j + "\" aria-expanded=\"true\" aria-controls=\"collapse" + j + "\">" + filteredArray[j].properties.title + "</button></h5></div>";
+            // var movieTitle = "<h3>" + filteredArray[j].properties.movie + "</h3>";
+            var movieDescription = "<div id=\"collapse" + j + "\" class=\"collapse show\" aria-labelledby=\"heading" + j + "\" data-parent=\"#accordion\"> <div class=\"card-body\">" + filteredArray[j].properties.description + "</div></div>";
+            $("#accordion").append("<div class=\"card\">" + movieLocation + movieDescription + "</div>");
         }
 
         map.on('load', function () {
@@ -295,6 +295,9 @@
             });
 
         });
+
+        // For the accordion to collapse
+        $('.collapse').collapse()
 
 
     </script>
