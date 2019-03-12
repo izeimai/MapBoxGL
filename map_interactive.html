@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <title>Display a map</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id='infoDisplay'></div>
+    <div id='map'></div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiaXplaW1haSIsImEiOiJjanN2M3o5YnQwMGVwNGFwanRtM2l0bzF5In0.hlOn2QUlP2gW7hYZyxqHHQ';
+        var map = new mapboxgl.Map({
+            container: 'map', // container id
+            // style: 'mapbox://styles/mapbox/streets-v9', // stylesheet location
+            style: 'mapbox://styles/mapbox/dark-v9', //hosted style id
+            center: [-75.16, 39.97], // starting position [lng, lat]
+            zoom: 12 // starting zoom
+        });
+
+
+
+        map.on('load', function () {
+            map.loadImage('https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Cat_silhouette.svg/400px-Cat_silhouette.svg.png', function (error, image) {
+                if (error) throw error;
+                map.addImage('cat', image);
+                map.addLayer({
+                    "id": "symbols",
+                    "type": "symbol",
+                    "source": {
+                        "type": "geojson",
+                        "data": {
+                            "type": "FeatureCollection",
+                            "features": [{
+                                "type": "Feature",
+                                "properties": {
+                                    "title": "Rocky's apartment",
+                                    "movie": "Rocky",
+                                    "icon": "star"
+                                },
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [-75.124070, 39.990016]
+                                }
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "title": "Mighty Mick Gym",
+                                    "movie": "Rocky",
+                                    "icon": "star"
+                                },
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [-75.132486, 39.982835]
+                                }
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "title": "Rocky Statue",
+                                    "movie": "Rocky",
+                                    "icon": "monument"
+                                },
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [-75.179285, 39.965169]
+                                }
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "title": "Ben Franklin Bridge",
+                                    "movie": "National Treasure",
+                                    "icon": "star"
+                                },
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [-75.134414, 39.952935]
+                                }
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "title": "Franklin Institute",
+                                    "movie": "National Treasure",
+                                    "icon": "museum"
+                                },
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [-75.172637, 39.958205]
+                                }
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "title": "Liberty Bell Center",
+                                    "movie": "National Treasure",
+                                    "icon": "monument"
+                                },
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [-75.150293, 39.949660]
+                                }
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "title": "2302 St Albans Place",
+                                    "movie": "Sixth Sense",
+                                    "icon": "star"
+                                },
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [-75.180895, 39.943145]
+                                }
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "title": "St. Augustine's Church",
+                                    "movie": "Sixth Sense",
+                                    "icon": "star"
+                                },
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [-75.146126, 39.955520]
+                                }
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "title": "Butcher and Singer",
+                                    "movie": "Sixth Sense",
+                                    "icon": "restaurant"
+                                },
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [-75.166154, 39.949358]
+                                }
+                            }
+                            ] // end of features array
+                        }
+                    },
+                    "layout": {
+                        "icon-image": "{icon}-15",
+                        "text-field": "{title}",
+                        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+                        "text-offset": [0, 0.6],
+                        "text-anchor": "top"
+                    },
+                    "paint": {
+                        "text-color": "#ffffff"
+                    }
+                });
+
+            });
+
+            // Current location of user
+            map.addControl(new mapboxgl.GeolocateControl({
+                positionOptions: {
+                    enableHighAccuracy: true
+                },
+                trackUserLocation: true
+            }));
+
+
+            // Center the map on the coordinates of any clicked symbol from the 'symbols' layer.
+            map.on('click', 'symbols', function (e) {
+                map.flyTo({ center: e.features[0].geometry.coordinates });
+                // This portion below is just jquery to make the information appear on the left side in the div infoDisplay
+                $("#infoDisplay").append("<h2>" + e.features[0].properties.title + "</h2>");
+                $("#infoDisplay").append("<h2>" + e.features[0].properties.movie + "</h2>");
+
+            });
+
+            // Change the cursor to a pointer when the it enters a feature in the 'symbols' layer.
+            map.on('mouseenter', 'symbols', function () {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+
+            // Change it back to a pointer when it leaves.
+            map.on('mouseleave', 'symbols', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+        });
+
+
+    </script>
+
+</body>
+
+</html>
